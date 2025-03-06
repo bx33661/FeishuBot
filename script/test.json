@@ -1,0 +1,55 @@
+{
+    "msg_type": "post",
+    "content": {
+      "post": {
+        "zh_cn": {
+          "title": "🏁 CTF赛事速递",
+          "content": [
+            [
+              { "tag": "text", "text": "🔰 赛事名称：", "bold": true },
+              { "tag": "a", "text": "HGAME 2025", "href": "https://hgame.vidar.club/games/2" }
+            ],
+            [
+              { "tag": "text", "text": "📅 报名时间：", "bold": true },
+              { "tag": "text", "text": "2025年1月20日 20:00 - 2025年2月17日 19:59" }
+            ],
+            [
+              { "tag": "text", "text": "⏰ 比赛时间：", "bold": true },
+              { "tag": "text", "text": "2025年2月3日 20:00 - 2025年2月17日 20:00" }
+            ],
+            [
+              { "tag": "text", "text": "🏢 主办方：", "bold": true },
+              { "tag": "text", "text": "杭州电子科技大学信息安全协会 Vidar-Team" }
+            ],
+            [
+              { "tag": "text", "text": "📱 联系方式：", "bold": true },
+              { "tag": "a", "text": "QQ群 576834793", "href": "tencent://groupwpa/?subcmd=allparam&uin=576834793" }
+            ],
+            [
+              { "tag": "text", "text": "🔰 赛事名称：", "bold": true },
+              { "tag": "a", "text": "VNCTF 2025", "href": "https://ctf.vnteam.cn" }
+            ],
+            [
+              { "tag": "text", "text": "📅 报名时间：", "bold": true },
+              { "tag": "text", "text": "2025年01月01日 00:00 - 2025年02月08日 09:59" }
+            ],
+            [
+              { "tag": "text", "text": "⏰ 比赛时间：", "bold": true },
+              { "tag": "text", "text": "2025年02月08日 10:00 - 2025年02月09日 10:00" }
+            ],
+            [
+              { "tag": "text", "text": "🏢 主办方：", "bold": true },
+              { "tag": "text", "text": "V&N Team" }
+            ],
+            [
+              { "tag": "text", "text": "📱 联系方式：", "bold": true },
+              { "tag": "a", "text": "QQ群 717513199", "href": "tencent://groupwpa/?subcmd=allparam&uin=717513199" }
+            ],
+            [
+              { "tag": "text", "text": "📊 共 2 个赛事", "bold": true }
+            ]
+          ]
+        }
+      }
+    }
+  }

@@ -2,20 +2,20 @@ import requests
 import json
 import schedule
 import time
-from datetime import datetime
 
-# 配置URL
-WEBHOOK_URL = "https://open.feishu.cn/open-apis/bot/v2/hook/6e5c020f-5963-4e0b-8a0b-88a54f9da27b"
+SCHEDULE_TIME = "23:01"
+WEBHOOK_URL = "https://open.feishu.cn/open-apis/bot/v2/hook/...."
 DATA_URL = "https://gitee.com/Probius/Hello-CTFtime/raw/main/CN.json"
 
 def fetch_ctf_data():
-    """从Gitee获取CTF比赛数据"""
+    #获取数据
     try:
         response = requests.get(DATA_URL)
         return response.json()
     except Exception as e:
         print(f"获取数据失败: {str(e)}")
         return None
+
 
 def format_message(data):
     """将CTF数据格式化为飞书消息格式"""
@@ -28,44 +28,42 @@ def format_message(data):
         }
 
     events = data["data"]["result"]
-    # 不再过滤已结束赛事，显示所有赛事
     message_content = []
+
     for event in events:
         # 构造QQ群链接
         qq_group = list(event["contac"].values())[0] if event["contac"] else ""
         qq_link = f"tencent://groupwpa/?subcmd=allparam&uin={qq_group}" if qq_group else ""
 
-        # 构建消息段落
-        event_block = [
+        # 构建消息段落（修正样式结构）
+        event_blocks = [
             [
-                {"tag": "text", "text": "🔰 赛事名称：", "style": {"bold": True}},
+                {"tag": "text", "text": "🔰 赛事名称：", "bold": True},
                 {"tag": "a", "text": event["name"], "href": event["link"]}
             ],
             [
-                {"tag": "text", "text": "📅 报名时间：", "style": {"bold": True}},
+                {"tag": "text", "text": "📅 报名时间：", "bold": True},
                 {"tag": "text", "text": f"{event['reg_time_start']} - {event['reg_time_end']}"}
             ],
             [
-                {"tag": "text", "text": "⏰ 比赛时间：", "style": {"bold": True}},
+                {"tag": "text", "text": "⏰ 比赛时间：", "bold": True},
                 {"tag": "text", "text": f"{event['comp_time_start']} - {event['comp_time_end']}"}
             ],
             [
-                {"tag": "text", "text": "🏢 主办方：", "style": {"bold": True}},
+                {"tag": "text", "text": "🏢 主办方：", "bold": True},
                 {"tag": "text", "text": event["organizer"]}
             ],
             [
-                {"tag": "text", "text": "📱 联系方式：", "style": {"bold": True}},
+                {"tag": "text", "text": "📱 联系方式：", "bold": True},
                 {"tag": "a", "text": f"QQ群 {qq_group}", "href": qq_link} if qq_link else
                 {"tag": "text", "text": "暂无"}
-            ],
-            [{"tag": "hr"}]
+            ]
         ]
-        message_content.extend(event_block)
+        message_content.extend(event_blocks)
 
-    # 添加统计信息
-    # 修改统计信息显示总赛事数量
+    # 添加统计信息（添加粗体样式）
     message_content.append([
-        {"tag": "text", "text": f"📊 共 {len(events)} 个赛事"}
+        {"tag": "text", "text": f"📊 共 {len(events)} 个赛事", "bold": True}
     ])
 
     return {
@@ -80,14 +78,11 @@ def format_message(data):
         }
     }
 
-def send_to_feishu():
-    """发送消息到飞书机器人"""
-    ctf_data = fetch_ctf_data()
+
+def send_to_feishu(data_json):
+    ctf_data = data_json
     if not ctf_data:
         return
-
-    # 构造消息
-    message = format_message(ctf_data)
 
     # 发送请求
     headers = {"Content-Type": "application/json"}
@@ -95,7 +90,7 @@ def send_to_feishu():
     try:
         response = requests.post(WEBHOOK_URL,
                                headers=headers,
-                               data=json.dumps(message))
+                               data=json.dumps(ctf_data, ensure_ascii=False).encode("utf-8"))
         response.raise_for_status()
         print(f"消息发送成功: {response.status_code}")
     except requests.exceptions.RequestException as e:
@@ -115,15 +110,17 @@ def send_to_feishu():
         }
         requests.post(WEBHOOK_URL, json=error_msg)
 
-# 定时任务配置（每天9点和21点执行）
-schedule.every().day.at("09:00").do(send_to_feishu)
-schedule.every().day.at("21:00").do(send_to_feishu)
+#定时任务
+def job():
+    print(f"开始执行任务: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}")
+    data = format_message(fetch_ctf_data())
+    send_to_feishu(data)
 
-# 立即执行一次测试
-print("开始执行CTF赛事推送...")
-send_to_feishu()
+if __name__ == "__main__":
+    schedule.every().day.at(SCHEDULE_TIME).do(job)
 
-# 启动定时任务
-while True:
-    schedule.run_pending()
-    time.sleep(60)
+    job()
+
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
